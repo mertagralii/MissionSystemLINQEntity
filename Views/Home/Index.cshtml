@@ -1,0 +1,58 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+
+<h1>Görevler Tablosu</h1>
+
+<h3>Filtre Uygula</h3>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Firstname</th>
+            <th>Lastname</th>
+            <th>Email</th>
+            <th>Category</th>
+            <th>DutyTitle</th>
+            <th>DeliveryDate</th>
+            <th>IsActive</th>
+			<th>IsApproved</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>Mert</td>
+            <td>Ağralı</td>
+            <td>mmertagrali@gmail.com</td>
+            <td>Software</td>
+            <td>Back-End Tarafına CRUD Eklenmesi</td>
+            <td>07.03.2025</td>
+			<td>True</td>
+			<td>True</td>
+        </tr>
+    </tbody>
+</table>
+
+<div class="row mt-4">
+	<div class="col-md-12">
+		<h5>Çalışana Görev Ata</h5>
+		<form action="/Home/TaskAssignment" method="post" autocomplete="off">
+			<select class="form-control mb-2" name="WorkerId">
+				<option value="" selected disabled>Çalışan Seçiniz</option>
+
+				<option>Çalışanlar Listesi</option>
+
+			</select>
+			<select class="form-control mb-2" name="CategoryId">
+				<option value="" selected disabled>Category Seçiniz</option>
+				<option>Kategoriler Listesi</option>
+			</select>
+			<select class="form-control mb-2" name="DutyId">
+				<option value="" selected disabled>Duty Seçiniz</option>
+				<option>Görevler Listesi</option>
+			</select>
+			<button class="btn btn-primary w-100">Görev Ata Ekle</button>
+		</form>
+	</div>
+
+</div>

@@ -1,0 +1,134 @@
+﻿@model Duty
+@{
+    List<Duty> duties = ViewBag.Duties;
+}
+
+@if (TempData["AddDutyIsValidError"] != null)
+{
+    <div class="alert alert-danger alert-dismissible">
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+		<strong>Error!</strong> @TempData["AddDutyIsValidError"]
+    </div>
+}
+
+@if (TempData["AddDutySuccess"] != null)
+{
+    <div class="alert alert-success alert-dismissible">
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        <strong>Success!</strong> @TempData["AddDutySuccess"]
+    </div>
+}
+
+@if (TempData["UpdateDutyFindError"] != null)
+{
+    <div class="alert alert-danger alert-dismissible">
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        <strong>Error!</strong> @TempData["UpdateDutyFindError"]
+    </div>
+}
+
+@if (TempData["UpdateDutyIsValidError"] != null)
+{
+    <div class="alert alert-danger alert-dismissible">
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        <strong>Error!</strong> @TempData["UpdateDutyIsValidError"]
+    </div>
+}
+
+@if (TempData["UpdateDutySuccess"] != null)
+{
+    <div class="alert alert-success alert-dismissible">
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        <strong>Success!</strong> @TempData["UpdateDutySuccess"]
+    </div>
+}
+
+@if (TempData["DeleteDutyFindError"] != null)
+{
+    <div class="alert alert-danger alert-dismissible">
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        <strong>Error!</strong> @TempData["DeleteDutyFindError"]
+    </div>
+}
+
+@if (TempData["DeleteDutySuccess"] != null)
+{
+    <div class="alert alert-success alert-dismissible">
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        <strong>Success!</strong> @TempData["DeleteDutySuccess"]
+    </div>
+}
+
+
+<h1>Görevler Listesi</h1>
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Id</th>
+            <th>DutyTitle</th>
+            <th>DutyDescription</th>
+            <th>CreatedDate</th>
+            <th>UpdateDate</th>
+            <th>DeliveryDate</th>
+            <th>IsActive</th>
+            <th>IsCompleted</th>
+            <th>İşlemler</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var duty in duties)
+        {
+            <tr>
+                <td>@duty.Id</td>
+                <td>@duty.DutyTitle</td>
+                <td>@duty.DutyDescription</td>
+                <td>@duty.CreatedDate.ToString("dd/MM/yyyy")</td>
+                @if (!duty.UpdateDate.HasValue || duty.UpdateDate == DateTime.MinValue)
+                {
+                    <td>Güncelleme Yapılmamış</td>
+                }
+                else
+                {
+                    <td>@duty.UpdateDate</td>
+                }
+                <td>@duty.DeliveryDate</td>
+                @if (duty.IsActive == true)
+                {
+                    <td>Akitf</td>
+                }
+                else
+                {
+                    <td>Pasif</td>
+                }
+                @if (duty.IsCompleted == true)
+				{
+					<td>Tamamlandı.</td>
+				}
+				else
+				{
+					<td>Tamamlanmadı.</td>
+				}
+                <td>
+                    <a href="/Home/UpdateDuty/@duty.Id" class="btn btn-primary">Güncelle</a>
+                    <a href="/Home/DeleteDuty/@duty.Id" class="btn btn-danger">Sil</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<div class="row mt-4">
+
+    <div class="col-md-12">
+        <h5>Görev Ekle</h5>
+        <form action="/Home/AddDuty" method="post" autocomplete="off">
+            <input type="text" class="form-control mb-2" placeholder="DutyTitle Giriniz" name="DutyTitle" required>
+            <span asp-validation-for="DutyTitle"></span>
+            <input type="text" class="form-control mb-2" placeholder="DutyDescription Giriniz" name="DutyDescription" required>
+			<span asp-validation-for="DutyDescription"></span>
+            <input type="text" class="form-control mb-2" placeholder="DeliveryDate Giriniz" name="DeliveryDate" required>
+			<span asp-validation-for="DeliveryDate"></span>
+            <button class="btn btn-primary w-100">Görev Ekle</button>
+        </form>
+    </div>
+</div>
