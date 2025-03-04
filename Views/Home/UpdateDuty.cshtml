@@ -1,0 +1,20 @@
+﻿@model Duty
+<div class="row mt-4">
+
+    <div class="col-md-12">
+        <h5>Görev Güncelle</h5>
+        <form action="/Home/UpdateDuty" method="post" autocomplete="off">
+            <input type="hidden" name="Id" value="@Model.Id"/>
+            <label>DutyTitle Giriniz</label>
+            <input type="text" class="form-control mb-2" placeholder="DutyTitle Giriniz" name="DutyTitle" required value="@Model.DutyTitle">
+            <span asp-validation-for="DutyTitle"></span>
+			<label>DutyDescription Giriniz</label>
+            <input type="text" class="form-control mb-2" placeholder="DutyDescription Giriniz" name="DutyDescription" required value="@Model.DutyDescription">
+            <span asp-validation-for="DutyDescription"></span>
+			<label>DeliveryDate Giriniz</label>
+            <input type="text" class="form-control mb-2" placeholder="DeliveryDate Giriniz" name="DeliveryDate" required value="@Model.DeliveryDate">
+            <span asp-validation-for="DeliveryDate"></span>
+            <button class="btn btn-primary w-100">Görev Güncelle</button>
+        </form>
+    </div>
+</div>

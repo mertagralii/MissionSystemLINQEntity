@@ -83,15 +83,12 @@
                 <td>@duty.DutyTitle</td>
                 <td>@duty.DutyDescription</td>
                 <td>@duty.CreatedDate.ToString("dd/MM/yyyy")</td>
-                @if (!duty.UpdateDate.HasValue || duty.UpdateDate == DateTime.MinValue)
-                {
-                    <td>Güncelleme Yapılmamış</td>
-                }
-                else
-                {
-                    <td>@duty.UpdateDate</td>
-                }
-                <td>@duty.DeliveryDate</td>
+                <td>
+                    @(duty.UpdateDate.HasValue && duty.UpdateDate != DateTime.MinValue
+                        ? duty.UpdateDate.Value.ToString("dd/MM/yyyy")
+                        : "Güncelleme Yapılmamış")
+                </td>
+                <td>@duty.DeliveryDate.ToString("dd/MM/yyyy")</td>
                 @if (duty.IsActive == true)
                 {
                     <td>Akitf</td>

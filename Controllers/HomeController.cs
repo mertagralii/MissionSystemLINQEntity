@@ -69,9 +69,10 @@ public class HomeController : Controller
             TempData["UpdateDutyIsValidError"] = "Lütfen tüm alanlarý doldurunuz.";
             return RedirectToAction("Duty");
         }
+        duty.UpdateDate = DateTime.Now;
         _context.Duties.Update(duty);
         _context.SaveChanges();
-        TempData["UpdateDutySuccess"] = "Ekleme Ýþlemi Baþarýlý";
+        TempData["UpdateDutySuccess"] = "Güncelleme Ýþlemi Baþarýlý";
         return RedirectToAction("Duty");
     }
 
