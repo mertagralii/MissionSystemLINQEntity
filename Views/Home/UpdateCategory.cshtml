@@ -1,0 +1,15 @@
+﻿@model Category
+<div class="row mt-4">
+
+    <div class="col-md-12">
+        <h5>Kategory Güncelle</h5>
+        <form action="/Home/UpdateCategory" method="post" autocomplete="off">
+            <input type="hidden" name="Id" value="@Model.Id" />
+            <input type="text" class="form-control mb-2" placeholder="CategoryName Giriniz" name="CategoryName" value="@Model.CategoryName" required>
+            <span asp-validation-for="CategoryName"></span>
+            <input type="text" class="form-control mb-2" placeholder="CategorySummary Giriniz" name="CategorySummary" value="@Model.CategorySummary" required>
+            <span asp-validation-for="CategorySummary"></span>
+            <button class="btn btn-primary w-100">Kategory Güncelle</button>
+        </form>
+    </div>
+</div>

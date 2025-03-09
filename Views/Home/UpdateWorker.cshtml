@@ -1,0 +1,36 @@
+﻿@model Worker
+<div class="row mt-4">
+
+    <div class="col-md-12">
+        <h5>Çalışan Güncelle</h5>
+        <form action="/Home/UpdateWorker" method="post" autocomplete="off">
+            <input type="hidden" name="Id" value="@Model.Id" />
+            <input type="text" class="form-control mb-2" placeholder="Name Giriniz." name="Name" value="@Model.Name" required>
+            <span asp-validation-for="Name"></span>
+            <input type="text" class="form-control mb-2" placeholder="Surname Giriniz." name="Surname" value="@Model.Surname" required>
+            <span asp-validation-for="Surname"></span>
+            <input type="number" class="form-control mb-2" placeholder="Age Giriniz." name="Age" value="@Model.Age" required>
+            <span asp-validation-for="Age"></span>
+            <select class="form-control mb-2" name="Gender">
+                <option value="" selected disabled>Gender Seçiniz</option>
+                @if (Model.Gender == true)
+                {
+                    <option value="true" selected>Erkek</option>
+                    <option value="false" >Kadın</option>
+                }
+                else
+                {
+                    <option value="false" selected>Kadın</option>
+                    <option value="true" >Erkek</option>
+                }
+            </select>
+            <input type="number" class="form-control mb-2" placeholder="Phone Giriniz." name="Phone" value="@Model.Phone" required>
+            <span asp-validation-for="Phone"></span>
+            <input type="text" class="form-control mb-2" placeholder="Email Giriniz." name="Email" value="@Model.Email" required>
+            <span asp-validation-for="Email"></span>
+            <input type="text" class="form-control mb-2" placeholder="Adress Giriniz." name="Adress" value="@Model.Adress" required>
+            <span asp-validation-for="Adress"></span>
+            <button class="btn btn-primary w-100">Çalışan Güncelle</button>
+        </form>
+    </div>
+</div>

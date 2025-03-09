@@ -1,10 +1,40 @@
-﻿@{
+﻿@model List<WorkerCategoryDuty>
+@{
     ViewData["Title"] = "Home Page";
 }
 
 <h1>Görevler Tablosu</h1>
 
 <h3>Filtre Uygula</h3>
+<form method="get" action="/Home/Index">
+    <div class="row">
+        <div class="col-md-4">
+            <label>Kategori Seç:</label>
+            <select class="form-select" name="categoryId">
+                <option value="">Tümü</option>
+                @foreach (var category in ViewBag.Categories)
+                {
+                    <option value="@category.Id">@category.CategoryName</option>
+                }
+            </select>
+        </div>
+        <div class="col-md-4">
+            <label>Çalışan Seç:</label>
+            <select class="form-select" name="workerId">
+                <option value="">Tümü</option>
+                @foreach (var worker in ViewBag.Workers)
+                {
+                    <option value="@worker.Id">@worker.Name @worker.Surname</option>
+                }
+            </select>
+        </div>
+        <div class="col-md-4 d-flex align-items-end">
+            <button type="submit" class="btn btn-primary">Filtrele</button>
+        </div>
+    </div>
+</form>
+
+
 
 <table class="table table-striped">
     <thead>
@@ -14,45 +44,23 @@
             <th>Email</th>
             <th>Category</th>
             <th>DutyTitle</th>
+            <th>DutyDescription</th>
             <th>DeliveryDate</th>
-            <th>IsActive</th>
-			<th>IsApproved</th>
         </tr>
     </thead>
     <tbody>
-        <tr>
-            <td>Mert</td>
-            <td>Ağralı</td>
-            <td>mmertagrali@gmail.com</td>
-            <td>Software</td>
-            <td>Back-End Tarafına CRUD Eklenmesi</td>
-            <td>07.03.2025</td>
-			<td>True</td>
-			<td>True</td>
-        </tr>
+        @foreach (var task in Model)
+        {
+            <tr>
+                <td>@task.Worker.Name</td>
+                <td>@task.Worker.Surname</td>
+                <td>@task.Worker.Email</td>
+                <td>@task.Category.CategoryName</td>
+                <td>@task.Duty.DutyTitle</td>
+                <td>@task.Duty.DutyDescription</td>
+                <td>@task.Duty.DeliveryDate.ToString("dd/MM/yyyy")</td>
+            </tr>
+        }
+
     </tbody>
 </table>
-
-<div class="row mt-4">
-	<div class="col-md-12">
-		<h5>Çalışana Görev Ata</h5>
-		<form action="/Home/TaskAssignment" method="post" autocomplete="off">
-			<select class="form-control mb-2" name="WorkerId">
-				<option value="" selected disabled>Çalışan Seçiniz</option>
-
-				<option>Çalışanlar Listesi</option>
-
-			</select>
-			<select class="form-control mb-2" name="CategoryId">
-				<option value="" selected disabled>Category Seçiniz</option>
-				<option>Kategoriler Listesi</option>
-			</select>
-			<select class="form-control mb-2" name="DutyId">
-				<option value="" selected disabled>Duty Seçiniz</option>
-				<option>Görevler Listesi</option>
-			</select>
-			<button class="btn btn-primary w-100">Görev Ata Ekle</button>
-		</form>
-	</div>
-
-</div>

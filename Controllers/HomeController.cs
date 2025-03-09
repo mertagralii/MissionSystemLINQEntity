@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using MissionSystem.Data;
 using MissionSystem.Models;
 
@@ -14,9 +15,33 @@ public class HomeController : Controller
         _context = context;
     }
 
-    public IActionResult Index()
+    public IActionResult Index(int? categoryId, int? workerId)
     {
-        return View();
+
+        var query = _context.WorkerCategoryDuties
+        .Include(w => w.Worker)
+        .Include(c => c.Category)
+        .Include(d => d.Duty)
+        .Where(p => p.Duty.IsActive == true && p.Duty.IsCompleted == false)
+        .AsQueryable(); // Sorguyu dinamik hale getir
+
+        if (categoryId.HasValue) // Eðer categoryId deðeri varsa (HasValue ==> HasValue, nullable (int?, double?, DateTime? gibi) deðiþkenlerde kullanýlýr ve deðiþkenin içinde bir deðer olup olmadýðýný kontrol eder.)
+        {
+            query = query.Where(p => p.Category.Id == categoryId); // Kategori Id'sine göre filtrele (Yukardaki query'de tüm sorgu var, burada da o tüm sorguya where ekledik filtreledik.)
+        }
+
+        if (workerId.HasValue) // Eðer workerId deðeri varsa
+        {
+            query = query.Where(p => p.Worker.Id == workerId); // Worker Id'sine göre filtrele (Yukardaki query'de tüm sorgu var, burada da o tüm sorguya where ekledik filtreledik.)
+        }
+
+        var taskAssignmentsList = query.ToList(); // Sorguyu çalýþtýr ve listeye çevir
+
+        // ViewBag ile kategorileri ve çalýþanlarý gönder
+        ViewBag.Categories = _context.Categories.ToList();
+        ViewBag.Workers = _context.Workers.ToList();
+
+        return View(taskAssignmentsList);
     }
 
     public IActionResult Category()
@@ -36,6 +61,7 @@ public class HomeController : Controller
         ViewBag.Duties = _context.Duties.ToList();
         return View();
     }
+    #region Duty CRUD Operations
     [HttpPost]
     public IActionResult AddDuty(Duty duty) 
     {
@@ -90,8 +116,10 @@ public class HomeController : Controller
         TempData["DeleteDutySuccess"] = "Silme Ýþlemi Baþarýlý";
         return RedirectToAction("Duty");
     }
+    #endregion
 
 
+    #region Category CRUD Operations
     [HttpPost]
     public IActionResult AddCategory(Category category)
     {
@@ -137,7 +165,9 @@ public class HomeController : Controller
         _context.SaveChanges();
         return RedirectToAction("Category");
     }
+    #endregion
 
+    #region Worker CRUD Operations
     [HttpPost]
     public IActionResult AddWorker(Worker worker)
     {
@@ -160,7 +190,7 @@ public class HomeController : Controller
         {
             return RedirectToAction("UpdateWorker");
         }
-        return View();
+        return View(selectedWorker);
     }
     [HttpPost]
     public IActionResult UpdateWorker(Worker worker)
@@ -169,6 +199,7 @@ public class HomeController : Controller
         {
             return RedirectToAction("UpdateWorker");
         }
+        worker.UpdateDate = DateTime.Now;
         _context.Workers.Update(worker);
         _context.SaveChanges();
         return RedirectToAction("Index");
@@ -185,42 +216,48 @@ public class HomeController : Controller
         _context.SaveChanges();
         return RedirectToAction("Worker");
     }
+    #endregion
 
-    [HttpPost]
-    public IActionResult TaskAssignment(WorkerCategoryDuty taskassigment) 
+    #region TaskAssignment CRUD Operations
+
+    [HttpGet]
+    public IActionResult TaskAssignment()
     {
-        if (!ModelState.IsValid)
+        ViewBag.Workers = _context.Workers.ToList();
+        ViewBag.Categories = _context.Categories.ToList();
+        ViewBag.Duties = _context.Duties.ToList();
+
+       var taskAssignments = _context.WorkerCategoryDuties
+            .Include(w => w.Worker)
+            .Include(c => c.Category)
+            .Include(d => d.Duty)
+            .ToList();
+
+        return View(taskAssignments);
+    }
+    [HttpPost]
+    public IActionResult AddTaskAssignment(WorkerCategoryDuty taskassigment)  // Ekleme
+    {
+        if (taskassigment.CategoryId == null)
+        {
+            return RedirectToAction("TaskAssignment");
+        }
+        if (taskassigment.WorkerId == null)
+        {
+            return RedirectToAction("TaskAssignment");
+        }
+        if (taskassigment.DutyId == null)
         {
             return RedirectToAction("TaskAssignment");
         }
 
         _context.WorkerCategoryDuties.Add(taskassigment);
         _context.SaveChanges();
-        return RedirectToAction("Index");
+        return RedirectToAction("TaskAssignment");
     }
-    [HttpGet]
-    public IActionResult UpdateTaskAssignment(int Id)
-    {
-        var selectedTaskAssignment = _context.WorkerCategoryDuties.Find(Id);
-        if (selectedTaskAssignment == null)
-        {
-            return RedirectToAction("UpdateTaskAssignment");
-        }
-        return View(selectedTaskAssignment);
-    }
-    [HttpPost]
-    public IActionResult UpdateTaskAssignment(WorkerCategoryDuty taskassigment)
-    {
-        if (!ModelState.IsValid)
-        {
-            return RedirectToAction("UpdateTaskAssignment");
-        }
-        _context.WorkerCategoryDuties.Update(taskassigment);
-        _context.SaveChanges();
-        return RedirectToAction("Index");
-    }
+    
 
-    public IActionResult DeleteTaskAssignment(int Id) 
+    public IActionResult DeleteTaskAssignment(int Id) // Silme
     {
         var deletedTaskAssignment = _context.WorkerCategoryDuties.Find(Id);
         if (deletedTaskAssignment == null)
@@ -232,6 +269,51 @@ public class HomeController : Controller
 
         return RedirectToAction("Index");
     }
+    
+    public IActionResult TaskAssignmentIsActiveted(int Id) 
+    {
+        var taskAssignment = _context.WorkerCategoryDuties
+         .Include(wcd => wcd.Duty) // Duty iliþkisini dahil et
+         .FirstOrDefault(wcd => wcd.Id == Id);
+        taskAssignment.Duty.IsActive = true;
+        _context.WorkerCategoryDuties.Update(taskAssignment);
+        _context.SaveChanges();
+        return RedirectToAction("Index");
+    }
+    public IActionResult TaskAssignmentIsNotActiveted(int Id)
+    {
+        var taskAssignment = _context.WorkerCategoryDuties
+         .Include(wcd => wcd.Duty) // Duty iliþkisini dahil et
+         .FirstOrDefault(wcd => wcd.Id == Id);
+        taskAssignment.Duty.IsActive = false;
+        _context.WorkerCategoryDuties.Update(taskAssignment);
+        _context.SaveChanges();
+        return RedirectToAction("Index");
+    }
+
+    public IActionResult TaskAssignmentIsCompleted(int Id) 
+    {
+        var taskAssignment = _context.WorkerCategoryDuties
+         .Include(wcd => wcd.Duty) // Duty iliþkisini dahil et
+         .FirstOrDefault(wcd => wcd.Id == Id);
+        taskAssignment.Duty.IsCompleted = true;
+        _context.WorkerCategoryDuties.Update(taskAssignment);
+        _context.SaveChanges();
+        return RedirectToAction("Index");
+    }
+    public IActionResult TaskAssignmentIsNotCompleted(int Id)
+    {
+        var taskAssignment = _context.WorkerCategoryDuties
+         .Include(wcd => wcd.Duty) // Duty iliþkisini dahil et
+         .FirstOrDefault(wcd => wcd.Id == Id);
+        taskAssignment.Duty.IsCompleted = false;
+        _context.WorkerCategoryDuties.Update(taskAssignment);
+        _context.SaveChanges();
+        return RedirectToAction("Index");
+    }
+    #endregion
+
+
 
     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
     public IActionResult Error()

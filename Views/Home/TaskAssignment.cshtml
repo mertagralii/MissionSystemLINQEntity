@@ -1,0 +1,108 @@
+﻿@model List<WorkerCategoryDuty>
+@{
+    ViewData["Title"] = "Task Page";
+    List<Worker> workers = ViewBag.Workers;
+    List<Category> categoryList = ViewBag.Categories;
+    List<Duty> duties = ViewBag.Duties;
+    List<WorkerCategoryDuty> taskAssigments = ViewBag.TaskAssignments;
+}
+
+<h1>Görevler Tablosu</h1>
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Firstname</th>
+            <th>Lastname</th>
+            <th>Email</th>
+            <th>Category</th>
+            <th>DutyTitle</th>
+            <th>DutyDescription</th>
+            <th>DeliveryDate</th>
+            <th>IsActive</th>
+            <th>IsCompleted</th>
+            <th>İşlemler</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var task in Model)
+        {
+            <tr>
+                <td>@task.Worker.Name</td>
+                <td>@task.Worker.Surname</td>
+                <td>@task.Worker.Email</td>
+                <td>@task.Category.CategoryName</td>
+                <td>@task.Duty.DutyTitle</td>
+                <td>@task.Duty.DutyDescription</td>
+                <td>@task.Duty.DeliveryDate.ToString("dd/MM/yyyy")</td>
+                @if (task.Duty.IsActive == true)
+                {
+                    <td><p class="text-success">Aktif!</p></td>
+                }
+                else
+                {
+                    <td><p class="text-danger">Pasif</p></td>
+                }
+                @if (task.Duty.IsCompleted == true)
+                {
+                    <td><p class="text-success">Tamamlandı!</p></td>
+                }
+                else
+                {
+                    <td><p class="text-danger">Tamamlanmadı</p></td>
+                }
+                <td>
+                    @if (task.Duty.IsCompleted == true)
+                    {
+                        <a href="/Home/TaskAssignmentIsNotCompleted/@task.Id" class="btn btn-success">Tamamlanmadı</a>
+                    }
+                    else
+                    {
+                        <a href="/Home/TaskAssignmentIsCompleted/@task.Id" class="btn btn-success">Tamamlandı</a>
+                    }
+                    @if (task.Duty.IsActive == true)
+                    {
+                        <a href="/Home/TaskAssignmentIsNotActiveted/@task.Id" class="btn btn-warning">Pasif et</a>
+                    }
+                    else
+                    {
+                        <a href="/Home/TaskAssignmentIsActiveted/@task.Id" class="btn btn-warning">Aktif et</a>
+                    }
+                    
+                    <a href="/Home/DeleteTaskAssignment/@task.Id" class="btn btn-danger">Görev Sil</a>
+                </td>
+            </tr>
+        }
+        
+    </tbody>
+</table>
+
+<div class="row mt-4">
+    <div class="col-md-12">
+        <h5>Çalışana Görev Ata</h5>
+        <form action="/Home/AddTaskAssignment" method="post" autocomplete="off">
+            <select class="form-control mb-2" name="WorkerId">
+                <option value="" selected disabled>Çalışan Seçiniz</option>
+                @foreach (var worker in workers)
+                    {
+                    <option value="@worker.Id">@worker.Name @worker.Surname</option>
+                    }
+            </select>
+            <select class="form-control mb-2" name="CategoryId">
+                <option value="" selected disabled>Category Seçiniz</option>
+                @foreach (var category in categoryList)
+                    {
+					<option value="@category.Id">@category.CategoryName</option>
+                    }
+            </select>
+            <select class="form-control mb-2" name="DutyId">
+                <option value="" selected disabled>Duty Seçiniz</option>
+                @foreach (var duty in duties)
+                    {
+                    <option value="@duty.Id">@duty.DutyTitle</option>
+                    }
+            </select>
+            <button class="btn btn-primary w-100">Görev Ata Ekle</button>
+        </form>
+    </div>
+
+</div>

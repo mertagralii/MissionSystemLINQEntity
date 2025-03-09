@@ -39,14 +39,11 @@
                 <td>@worker.Email</td>
                 <td>@worker.Adress</td>
                 <td>@worker.CreatedDate.ToString("dd/MM/yyyy")</td>
-                @if (!worker.UpdateDate.HasValue || worker.UpdateDate == DateTime.MinValue)
-                {
-                    <td>Güncelleme Yapılmamış</td>
-                }
-                else
-                {
-                    <td>@worker.UpdateDate</td>
-                }
+                <td>
+                    @(worker.UpdateDate.HasValue && worker.UpdateDate != DateTime.MinValue
+                        ? worker.UpdateDate.Value.ToString("dd/MM/yyyy")
+                        : "Güncelleme Yapılmamış")
+                </td>
                 <td>
                     <a href="/Home/UpdateWorker/@worker.Id" class="btn btn-primary">Güncelle</a>
                     <a href="/Home/DeleteWorker/@worker.Id" class="btn btn-danger">Sil</a>
